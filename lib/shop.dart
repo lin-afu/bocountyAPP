@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:app/card1.dart';
 import 'package:app/cardinfo.dart';
 import 'package:app/notify.dart';
 import 'package:flutter/material.dart';
@@ -208,10 +209,10 @@ class _ShopPageState extends State<ShopPage> {
                                       alignment: Alignment(0.0045, 0),
                                       child: Transform.translate(
 
-                                        offset: Offset(0, 4),
+                                        offset: Offset(0, 6.825),
                                         child: Container(
-                                          height: screenWidth * 0.4645,
-                                          width: screenWidth * 0.4645,
+                                          height: screenWidth * 0.475,
+                                          width: screenWidth * 0.475,
                                           child: Image.asset(card)
                                         ),
                                       ),
@@ -295,7 +296,7 @@ class _ShopPageState extends State<ShopPage> {
                                                           onPressed: () {
                                                             Navigator.push(
                                                               context,
-                                                              MaterialPageRoute(builder: (context) => const ShopPage()),
+                                                              MaterialPageRoute(builder: (context) => const Card1Page()),
                                                             );
                                                             print('close click');
                                                           },
