@@ -2,8 +2,8 @@
 
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:app/card1.dart';
+import 'package:app/card2.dart';
 import 'package:app/cardinfo.dart';
 import 'package:app/notify.dart';
 import 'package:flutter/material.dart';
@@ -30,11 +30,15 @@ class _ShopPageState extends State<ShopPage> {
   late String card = "";
   var bocoin;
 
+  Timer? _timer;
+
   void _startTimer() {
-    Timer(Duration(seconds: 4), () {
-      setState(() {
-        showImage = false;
-      });
+    _timer = Timer(Duration(seconds: 4), () {
+      if (mounted) {
+        setState(() {
+          showImage = false;
+        });
+      }
     });
   }
 
@@ -56,8 +60,8 @@ class _ShopPageState extends State<ShopPage> {
       if (status == 0) {
         // print("成功取得抽獎池! ,$pool");
         setState(() {
-          card = pool['photo'];
-          print(card);
+          card = pool['photo']!;
+          // print(card);
         });
         print("成功取得抽獎池! ,$data");
       } else{
@@ -116,6 +120,7 @@ class _ShopPageState extends State<ShopPage> {
 
   @override
   void dispose() {
+    _timer?.cancel();
     _focusNode.dispose();
     super.dispose();
   }
@@ -213,7 +218,25 @@ class _ShopPageState extends State<ShopPage> {
                                         child: Container(
                                           height: screenWidth * 0.475,
                                           width: screenWidth * 0.475,
-                                          child: Image.asset(card)
+                                          child:
+                                          card.isNotEmpty
+                                        ? Image.asset(card!) :
+                                          // Container(
+                                          //   height: screenHeight*0.1,
+                                          //   width: screenHeight*0.1,
+                                          //   child: Transform.scale(
+                                          //     scale: 0.1, // 设置缩放比例，调整大小
+                                          //     child: CircularProgressIndicator(
+                                          //       strokeWidth: 40,
+                                          //     ),
+                                          //   ),
+                                          // ),
+                                          Container(
+                                            child: Center(
+                                              child: Text('正在抓取圖片...'),
+                                            ),
+                                          )
+
                                         ),
                                       ),
                                     ),
@@ -294,11 +317,37 @@ class _ShopPageState extends State<ShopPage> {
                                                             foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                                                           ),
                                                           onPressed: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(builder: (context) => const Card1Page()),
-                                                            );
-                                                            print('close click');
+                                                            if(bocoin>=10){
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(builder: (context) => const Card1Page()),
+                                                              );
+                                                            }else{
+                                                              showDialog(
+                                                                context: context,
+                                                                builder: (BuildContext context) {
+                                                                  return AlertDialog(
+                                                                    content:
+                                                                    const SizedBox(
+                                                                      height: 50,
+                                                                      child: Align(
+                                                                        alignment: Alignment.center,
+                                                                        child: Text('您的bocoin不足！',),
+                                                                      ),
+                                                                    ),
+                                                                    actions: [
+                                                                      TextButton(
+                                                                        onPressed: () {
+                                                                          Navigator.of(context).pop();
+                                                                        },
+                                                                        child: Text('確定'),
+                                                                      ),
+                                                                    ],
+                                                                    contentPadding: EdgeInsets.only(top: 40, right: 20, left: 20),
+                                                                  );
+                                                                },
+                                                              );
+                                                            }
                                                           },
                                                           child: const SizedBox(
                                                             width: 40,
@@ -327,11 +376,37 @@ class _ShopPageState extends State<ShopPage> {
                                                             foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                                                           ),
                                                           onPressed: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(builder: (context) => const ShopPage()),
-                                                            );
-                                                            print('close click');
+                                                            if(bocoin>=90){
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(builder: (context) => const Card2Page()),
+                                                              );
+                                                            }else{
+                                                              showDialog(
+                                                                context: context,
+                                                                builder: (BuildContext context) {
+                                                                  return AlertDialog(
+                                                                    content:
+                                                                    const SizedBox(
+                                                                      height: 50,
+                                                                      child: Align(
+                                                                        alignment: Alignment.center,
+                                                                        child: Text('您的bocoin不足！',),
+                                                                      ),
+                                                                    ),
+                                                                    actions: [
+                                                                      TextButton(
+                                                                        onPressed: () {
+                                                                          Navigator.of(context).pop();
+                                                                        },
+                                                                        child: Text('確定'),
+                                                                      ),
+                                                                    ],
+                                                                    contentPadding: EdgeInsets.only(top: 40, right: 20, left: 20),
+                                                                  );
+                                                                },
+                                                              );
+                                                            }
                                                           },
                                                           child: const SizedBox(
                                                             width: 40,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'main.dart';
 
+bool isStackVisible = false;
 late bool isears =false;
 late String _hair= "assets/images/item/hair/boy.png";
 late String _face= "assets/images/item/face/boy.png";
@@ -39,10 +40,15 @@ class _EditPageState extends State<EditPage> {
   void initState() {
     _getUserOutlook(apiUrl);
     _getUserItem(apiUrl);
-    getCategoryAccessories();
-    super.initState();
     setState(() {
       getCategoryAccessories();
+    });
+    super.initState();
+
+    Future.delayed(Duration(milliseconds: 250), () {
+      setState(() {
+        isStackVisible = true;
+      });
     });
   }
 
@@ -315,8 +321,8 @@ class _EditPageState extends State<EditPage> {
 
     return GestureDetector(
       onTap: (){
-        getCategoryAccessories();
         super.initState();
+        getCategoryAccessories();
         setState(() {
           getCategoryAccessories();
         });
@@ -365,7 +371,7 @@ class _EditPageState extends State<EditPage> {
                         child: Container(
                             width: screenWidth*0.55,
                             child: Center(
-                              child: Stack(
+                              child: isStackVisible ? Stack(
                                 children: [
                                   Align(
                                       alignment: Alignment.center,
@@ -382,7 +388,7 @@ class _EditPageState extends State<EditPage> {
                                       child: Container(
                                           width: screenWidth*0.21,
                                           child: FractionalTranslation(
-                                            translation: Offset(-0.065, -0.92),
+                                            translation: Offset(-0.07, -0.92),
                                             child: Image?.asset(_face),
                                           )
                                       )
@@ -423,11 +429,11 @@ class _EditPageState extends State<EditPage> {
                                   Align(
                                       alignment: Alignment.center,
                                       child: Container(
-                                          width: screenWidth*0.48,
+                                          width: screenWidth*0.47,
                                           // child:Align(
                                           //   alignment: isears ? Alignment(0.0155, 0.04) : Alignment(0.3,0.27),
                                           child: FractionalTranslation(
-                                            translation: isears ? Offset(-0.032, -0.58) : Offset(0.01,0.25),
+                                            translation: isears ? Offset(-0.02, -0.58) : Offset(-0.02,-0.02),
                                             child: Image.asset(_else),
                                           )
                                       )
@@ -472,7 +478,7 @@ class _EditPageState extends State<EditPage> {
                                       )
                                   ),
                                 ],
-                              ),
+                              ): Container(),
                             )
                         ),
                       ),
@@ -547,6 +553,33 @@ class _EditPageState extends State<EditPage> {
                             child: CategoryRow(
                               category: categories[selectedCategoryIndex],
                               accessories: getCategoryAccessories(),
+                              onAccessorySelected: (selectedAccessory) {
+                                // 根据选中的配件信息更新图片
+                                setState(() {
+                                  final String? category = selectedAccessory['category'];
+                                  final String? itemId = selectedAccessory['itemId'];
+                                  final String? photo = selectedAccessory['photo'];
+
+                                  if (category == '髮型') {
+                                    _hair = photo!;
+                                    _hairPID = _hairID;
+                                    _hairID = itemId!;
+                                  } else if (category == '五官') {
+                                    _face = photo!;
+                                    _facePID = _faceID;
+                                    _faceID = itemId!;
+                                  } else if (category == '衣服') {
+                                    _clothes = photo!;
+                                    _clothesPID = _clothesID;
+                                    _clothesID = itemId!;
+                                  } else if (category == '配件') {
+                                    _else = photo!;
+                                    _elsePID = _elseID;
+                                    _elseID = itemId!;
+                                    isears = itemId == '21' || itemId == '22' || itemId == '23' || itemId == '24' || itemId == '28';
+                                  }
+                                });
+                              },
                             ),
                           )
                       ),
@@ -587,8 +620,9 @@ class _EditPageState extends State<EditPage> {
 class CategoryRow extends StatefulWidget {
   final String category;
   final List<Map< String, String>> accessories;
+  final Function(Map<String, String>) onAccessorySelected; // 添加回调函数
 
-  CategoryRow({required this.category, required this.accessories});
+  CategoryRow({required this.category, required this.accessories, required this.onAccessorySelected});
 
   @override
   State<CategoryRow> createState() => _CategoryRowState();
@@ -606,46 +640,17 @@ class _CategoryRowState extends State<CategoryRow> {
           runSpacing: 16,
           children: widget.accessories.map((accessory) {
             return GestureDetector(
-              onTap: () {
-                // 处理点击配件的操作
-                final String? itemId = accessory['item_id'];
-                final String? photo = accessory['photo'];
-                            // print(accessory);
-                if(widget.category=='髮型'){
-                  setState(() {
-                    _hair=photo!;
-                    _hairPID=_hairID;
-                    _hairID=itemId!;
+                onTap: () {
+                  final String? itemId = accessory['item_id'];
+                  final String? photo = accessory['photo'];
+
+                  // 调用回调函数，传递选中的配件信息
+                  widget.onAccessorySelected({
+                    'category': widget.category,
+                    'itemId': itemId!,
+                    'photo': photo!,
                   });
-                }else if(widget.category=='五官'){
-                  setState(() {
-                    _face=photo!;
-                    _facePID=_faceID;
-                    _faceID=itemId!;
-                  });
-                }else if(widget.category=='衣服'){
-                  setState(() {
-                    _clothes=photo!;
-                    _clothesPID=_clothesID;
-                    _clothesID=itemId!;
-                  });
-                }else if(widget.category=='配件') {
-                  setState(() {
-                    _else = photo!;
-                    _elsePID=_elseID;
-                    _elseID=itemId!;
-                    isears=false;
-                  });
-                  if(itemId=='21' || itemId=='22' || itemId=='23' || itemId=='24' || itemId=='28'){
-                    setState(() {
-                      isears=true;
-                    });
-                    print("is ears");
-                  }
-                  print(isears);
-                }
-                print("${widget.category},$photo");
-              },
+                },
               child: Container(
                 decoration: BoxDecoration(
                     color: Color(0xFFC8B495),

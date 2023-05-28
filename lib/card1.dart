@@ -142,21 +142,35 @@ class _Card1PageState extends State<Card1Page> {
                     child: Column(
                       children: <Widget>[
                         SizedBox(height: screenHeight * 0.17),
+                        // Container(
+                        //   height: screenWidth * 0.3,
+                        //   width: screenWidth * 0.3,
+                        //   child: Container(
+                        //     decoration: BoxDecoration(
+                        //       color: Color(0xfff5eeda),
+                        //       borderRadius: BorderRadius.circular(10.0),
+                        //     ),
+                        //     width: screenWidth * 0.18,
+                        //     height: screenWidth * 0.18,
+                        //     child: Image.asset(
+                        //       _item[0]['photo']!,
+                        //       fit: BoxFit.contain,
+                        //     ),
+                        //   ),
+                        // ),
                         Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xfff5eeda),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
                           height: screenWidth * 0.3,
                           width: screenWidth * 0.3,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Color(0xfff5eeda),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            width: screenWidth * 0.18,
-                            height: screenWidth * 0.18,
-                            child: Image.asset(
-                              _item[0]['photo'],
-                              fit: BoxFit.contain,
-                            ),
-                          ),
+                          child: _item.isNotEmpty
+                              ? Image.asset(
+                            _item[0]['photo']!,
+                            fit: BoxFit.contain,
+                          )
+                              : CircularProgressIndicator(), // 或其他加载指示符
                         ),
                         SizedBox(height: screenHeight * 0.12),
                         TextButton(
@@ -170,10 +184,9 @@ class _Card1PageState extends State<Card1Page> {
                                 Colors.white),
                           ),
                           onPressed: () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) => const ShopPage()),
+                              MaterialPageRoute(builder: (context) =>ShopPage()),
                             );
                             print('close click');
                           },
@@ -182,7 +195,7 @@ class _Card1PageState extends State<Card1Page> {
                             height: 25,
                             child: Center(
                               child: Text(
-                                '關閉',
+                                '確認',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   letterSpacing: 5,

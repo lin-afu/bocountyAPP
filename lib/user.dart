@@ -37,6 +37,7 @@ class _UserPageState extends State<UserPage> {
   final FocusNode _focusNode2 = FocusNode();
 
   late bool isears =false;
+  bool isStackVisible = false;
   bool isEditingEnabled1 = false;
   bool isEditingEnabled2 = false;
   int count = 0;
@@ -51,6 +52,12 @@ class _UserPageState extends State<UserPage> {
     _getUserInfo(apiUrl);
     _getUserOutlook(apiUrl);
     super.initState();
+
+    Future.delayed(Duration(milliseconds: 200), () {
+      setState(() {
+        isStackVisible = true;
+      });
+    });
   }
 
   Future<void> _getUserInfo(apiUrl) async {
@@ -351,7 +358,7 @@ class _UserPageState extends State<UserPage> {
                                       print('person click');
                                     },
                                   child: Center(
-                                    child: Stack(
+                                    child: isStackVisible ? Stack(
                                       children: [
                                         Image.asset('assets/images/user/back.png'),
                                         Align(
@@ -407,7 +414,7 @@ class _UserPageState extends State<UserPage> {
                                             )
                                         ),
                                       ],
-                                    ),
+                                    ): Image.asset('assets/images/user/back.png'),
                                   )
                                 ),
                               ),
